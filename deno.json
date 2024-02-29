@@ -1,6 +1,6 @@
 {
     "tasks": {
         "back": "cd back && deno run --allow-all --watch server.ts",
-        "front": "cd front && ng serve"
+        "front": "cd front && npm install && ng serve"
     }
 }

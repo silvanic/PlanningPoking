@@ -1,7 +1,4 @@
-import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/cryptoRandomString.ts";
 import { Router } from "https://deno.land/x/oak@v13.2.5/mod.ts";
-import { Room } from "../models/Room.ts";
-import { rooms } from "../server.ts";
 import { User } from "../models/type.ts";
 import eventEmitter from "../events/room.events.ts";
 import { RoomService } from "../services/room.service.ts"
@@ -124,7 +121,7 @@ router.put("/room/:roomId/voter", async (ctx) => {
 
 router.get("/testing/:roomId", (ctx) => {
   ctx.response.status = 200;
-  ctx.response.body = rooms.get(ctx.params.roomId)?.sendJSON();
+  ctx.response.body = roomService.get(ctx.params.roomId)?.sendJSON();
 });
 
 export default router;

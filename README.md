@@ -24,6 +24,7 @@ In the root folder, execute :
 deno task front
 deno task back
 ```
+You can edit the ```.env``` in the back folder, if you want to connect to MongoDB.
 
 ## Todo
 - [ ] Internationalization

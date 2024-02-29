@@ -99,7 +99,7 @@ export class PlanPokerComponent {
   openDialog(templateRef: TemplateRef<unknown>) {
     this.dialogRef = this.dialog.open(templateRef, {
       width: '75%',
-      height:'75%'
+      ariaLabel: 'Room configuration modal'
     });
   }
   

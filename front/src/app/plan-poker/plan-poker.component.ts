@@ -72,15 +72,15 @@ export class PlanPokerComponent {
           console.log('ok');
           this.roomId = data.room.id;
           this.userId = data.userId;
-          this.optionForm.setValue({
-            name: data.room.name,
-            description: data.room.description,
-            url: data.room.url
-          })
           this.myService.getServerSentEvent(environment.apiUrl+'/events/'+this.roomId+'/'+this.userId)
           .subscribe( event => {
             this.connected = true;
             this.data = JSON.parse(event.data.slice(5)),null,2;
+            this.optionForm.setValue({
+              name: this.data.name,
+              description: this.data.description,
+              url: this.data.url
+            });
             if(this.data.status===0){
               this.vote='';
             }

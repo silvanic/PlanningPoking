@@ -14,17 +14,20 @@ import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 })
 export class PlanPokerComponent {
 
-  title = 'SSE';
-  connected: boolean = false;
+  title= 'SSE';
+  connected=false;
+  openSidenav=false;
+  vote='';
   data: any = {};
   identityForm = new FormGroup({
-    userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    roomName: new FormControl('', [Validators.required, Validators.minLength(1)])
+    userName: new FormControl('', [Validators.required, Validators.minLength(5)]),
+    roomName: new FormControl('', [Validators.required, Validators.minLength(5)])
   });
 
   optionForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(5)]),
     description: new FormControl(''),
-    url: new FormControl('', [Validators.required, Validators.minLength(1)])
+    url: new FormControl('')
   });
   
   userId = null;
@@ -70,6 +73,7 @@ export class PlanPokerComponent {
           this.roomId = data.room.id;
           this.userId = data.userId;
           this.optionForm.setValue({
+            name: data.room.name,
             description: data.room.description,
             url: data.room.url
           })
@@ -77,6 +81,9 @@ export class PlanPokerComponent {
           .subscribe( event => {
             this.connected = true;
             this.data = JSON.parse(event.data.slice(5)),null,2;
+            if(this.data.status===0){
+              this.vote='';
+            }
           });
         });
       }
@@ -84,7 +91,11 @@ export class PlanPokerComponent {
 
   passer(){
     if(this.roomId){
-      this.myService.passer(this.roomId).subscribe();
+      this.myService.passer(this.roomId).subscribe(()=>{
+        if(this.data.status===2){
+          this.openSidenav=true;
+        }
+      });
     }
   }
   
@@ -106,6 +117,7 @@ export class PlanPokerComponent {
   updateSalle(){
     if(this.roomId && this.optionForm.valid){
       this.myService.update(this.roomId, {
+        name: this.optionForm.value.name,
         description : this.optionForm.value.description,
         url: this.optionForm.value.url
       }).subscribe(()=>{
@@ -116,6 +128,7 @@ export class PlanPokerComponent {
 
   onVoted(value: string){
     if(this.roomId && this.userId){
+      this.vote=value;
       this.myService.voter(this.roomId, this.userId, value).subscribe();
     }
   }
@@ -138,4 +151,5 @@ export class PlanPokerComponent {
       )
     }
   }
+  
 }

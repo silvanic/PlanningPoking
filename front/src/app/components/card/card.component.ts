@@ -6,7 +6,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrl: './card.component.scss'
 })
 export class CardComponent {
-  @Input() value: string = '';
+  @Input() value = '';
+  @Input() selected = false;
+  @Input() disabled = false;
   @Output() voted = new EventEmitter<string>();
 
   vote(){

@@ -1,13 +1,35 @@
+<header>
+  <mat-toolbar>
+    <h1>Planning Poking</h1>
+    <span class="spacer"></span>
+    @if(connected){
+      <button mat-icon-button aria-label="Share link of the room" (click)="share(mySnackbar)">
+        <mat-icon>share</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        aria-label="Show room configuration"
+        (click)="openDialog(myModal)"
+        class="font-bold py-2 px-4 rounded- shadow-lg"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button
+        *ngIf="connected"
+        (click)="openSidenav = !openSidenav"
+        mat-icon-button
+        aria-label="Show sidenav"
+      >
+      <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-500 border-2 border-white rounded-full -top-0 -end-1 dark:border-gray-900">{{data.users.length}}</div>
+        <mat-icon>people</mat-icon>
+      </button>
+    }
+  </mat-toolbar>
+</header>
 <main>
-  <mat-drawer-container class="h-full">
+  <mat-drawer-container>
     <!-- sidebar d'une salle -->
-    <mat-drawer mode="side" position="end" class="max-h" [opened]="connected">
-      <div class="container mt-3 flex-col space-y-1">
-        <button mat-raised-button color="primary" (click)="passer()">
-          @if(data.status === 0){ 'VOTE' }@else if (data.status === 1) {
-          'RESULT' }@else{ 'NEW VOTE' }
-        </button>
-      </div>
+    <mat-drawer mode="over" position="end" class="max-h" [opened]="openSidenav">
       <table class="table-fixed m-5">
         <thead>
           <tr>
@@ -46,17 +68,6 @@
           </tr>
         </tbody>
       </table>
-      <div class="fixed bottom-0 right-0 items-center justify-center mr-3 mb-3">
-        <button
-          mat-fab
-          aria-label="Show room configuration"
-          color="accent"
-          (click)="openDialog(myModal)"
-          class="font-bold py-2 px-4 rounded- shadow-lg"
-        >
-          <mat-icon>settings</mat-icon>
-        </button>
-      </div>
     </mat-drawer>
 
     <!-- écran de connexion -->
@@ -70,10 +81,8 @@
           <mat-card class="mt-10 rounded">
             <mat-card-header class="container">
               <mat-card-title class="text-white">
-                <h2>
-                  LOG IN 
-                </h2>
-            </mat-card-title>
+                <h2>LOG IN</h2>
+              </mat-card-title>
             </mat-card-header>
             <mat-card-content [formGroup]="identityForm" class="mt-5">
               <p>
@@ -113,99 +122,62 @@
 
       <!-- écran de préparation -->
       <div *ngIf="connected">
-        <div [ngSwitch]="data.status" class="container">
+        <div class="container flex flex-col max-w-full">
           <mat-card
-            *ngSwitchCase="0"
-            class="max-w-threequarter min-w-half mt-10 rounded"
-          >
-            <mat-card-header>
-              <mat-card-title class="text-white"> 
-                <h2>Information</h2>
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content class="mt-5">
-              <div>
-                <h3 class="text-gray-100">Description</h3>
-                <p class="text-gray-200 text-justify">{{ data.description }}</p>
-                <button
-                  *ngIf="data.url"
-                  mat-raised-button
-                  color="accent"
-                  (click)="goToLink(data.url)"
-                >
-                  {{ "Voir la tâche" }}
-                </button>
-              </div>
-            </mat-card-content>
-          </mat-card>
-          <mat-card
-            *ngSwitchCase="1"
-            class="max-w-threequarter min-w-half mt-10 rounded"
+            class="size-10/12 mt-10 rounded"
           >
             <mat-card-header class="container">
               <mat-card-title class="text-white">
-                <h2>
-                  Time to vote !
-                </h2>
+                <h2>{{data.name}}</h2>
               </mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="container mt-5">
-                <div class="flex flex-wrap">
+                <div class="grid grid-cols-5 gap-1">
                   <card
                     *ngFor="let item of data.styleCard"
+                    [disabled]="data.status!='1'"
                     [value]="item"
+                    [selected]="item===vote"
                     (voted)="onVoted($event)"
                   />
                 </div>
               </div>
             </mat-card-content>
+            <mat-card-actions class="container">
+              <button mat-raised-button color="primary" (click)="passer()">
+              @switch (data.status) {
+                @case(0){
+                  VOTE NOW
+                }
+                @case(1){
+                  SHOWING RESULT
+                }
+                @case(2) {
+                  NEW VOTE
+                }
+              }
+                </button>
+            </mat-card-actions>
             <mat-card-content>
               <div class="mt-5">
                 <h3 class="text-gray-100">Description</h3>
-                <p class="text-gray-200 text-justify">{{ data.description }}</p>
-                <button
+                <p class="text-gray-200 text-justify">{{ data.description }}</p>                
+              </div>
+            </mat-card-content>
+            <mat-card-actions class="container">
+              <button
                   *ngIf="data.url"
                   mat-raised-button
-                  color="accent"
+                  color="primary"
                   (click)="goToLink(data.url)"
                   [matTooltip]="data.url"
                 >
                   {{ "Check the link" }}
                 </button>
-              </div>
-            </mat-card-content>
+            </mat-card-actions>
           </mat-card>
-          <mat-card
-            *ngSwitchCase="2"
-            class="max-w-threequarter min-w-half mt-10 rounded"
-          >
-            <mat-card-header class="container">
-              <mat-card-title class="text-white"> 
-              <h2>
-                Result
-              </h2>
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content class="container mt-5">
-              <table mat-table [dataSource]="data.users">
-                <ng-container matColumnDef="name">
-                  <th mat-header-cell *matHeaderCellDef>User</th>
-                  <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-                </ng-container>
-                <ng-container matColumnDef="vote">
-                  <th mat-header-cell *matHeaderCellDef>Vote</th>
-                  <td mat-cell *matCellDef="let element">{{ element.vote }}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="['name', 'vote']"></tr>
-                <tr
-                  mat-row
-                  *matRowDef="let row; columns: ['name', 'vote']"
-                ></tr>
-              </table>
-            </mat-card-content>
-          </mat-card>
-        </div>
+        </div>        
       </div>
       <!-- <pre class="text-black">
         {{ data | json }}
@@ -221,6 +193,16 @@
         <mat-card-title class="text-white">Configuration</mat-card-title>
       </mat-card-header>
       <mat-card-content class="mt-5">
+        <p>
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label class="text-gray-200">Room name</mat-label>
+            <textarea
+              matInput
+              formControlName="name"
+              placeholder="Room name"
+            ></textarea>
+          </mat-form-field>
+        </p>
         <p>
           <mat-form-field appearance="fill" class="w-full">
             <mat-label class="text-gray-200">Description</mat-label>

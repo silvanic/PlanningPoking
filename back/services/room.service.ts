@@ -17,8 +17,8 @@ export class RoomService{
         return this.rooms.get(id);
     }
 
-    creer(name: string){
-        const room = new Room(name);
+    creer(name: string, suit: string){
+        const room = new Room(name, suit.split(';'));
         this.set(room);
         return room;
     }

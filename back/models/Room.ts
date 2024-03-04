@@ -12,12 +12,12 @@ export class Room {
     url?: string;
     description?: string;
 
-    constructor(name: string) {
+    constructor(name: string, suit: Array<string>) {
         this.id = cryptoRandomString({length: 10}) ;
         this.name = name;
         this.status = StatusRoom.PREPARATION;
         this.users = [];
-        this.styleCard = ['0','1','2','3','5','8','13','21','34','50','?'];
+        this.styleCard = suit;
         this.url= '';
         this.description= '';
     }

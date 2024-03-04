@@ -86,6 +86,11 @@ export class PlanPokerComponent {
         }
       });
     }
+    this.identityForm.get('suit')?.valueChanges.subscribe(selectedValue => {
+      if(selectedValue!=='custom'){
+        this.identityForm.get('customSuit')?.setValue(null);
+      }
+    });
   }
 
   submit() {

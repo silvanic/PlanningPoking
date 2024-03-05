@@ -1,12 +1,11 @@
 import { assertEquals } from "https://deno.land/std@0.110.0/testing/asserts.ts";
 import {Room} from './models/Room.ts';
 import { User, StatusRoom, Vote } from './models/type.ts';
-import { RoomService } from './services/room.service.ts'
-import { rooms } from "./server.ts";
+import { RoomService } from './services/room.service.ts';
 
 Deno.test('Test Room', async (t)=>{
-    let roomService = new RoomService();
-    let roomTest = new Room("test");
+    const roomService = new RoomService();
+    const roomTest = new Room("test",['1','2','3','4','5','6']);
     roomService.set(roomTest);
 
     const user : User = {

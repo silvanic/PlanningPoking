@@ -14,7 +14,7 @@ router.post("/login", async (ctx) => {
     room = roomService.get(data.roomId);
   }
   if (!room) {
-    room = roomService.creer(data.roomName);
+    room = roomService.creer(data.roomName, data.suit);
   }
   const user = roomService.addUser(room.id, {
     id: null,
@@ -45,7 +45,7 @@ router.get("/events/:roomId/:userId", (ctx) => {
 
   eventEmitter.emit("connect", ctx.params.roomId, user);
 
-  target.addEventListener("close", (evt) => {
+  target.addEventListener("close", () => {
     eventEmitter.emit("disconnect", ctx.params.roomId, user);
   });
 });
@@ -54,14 +54,14 @@ router.put("/room/:roomId", async (ctx) => {
   const room = roomService.get(ctx.params.roomId);
   if (room) {
     try {
-      let json = await ctx.request.body.json();
+      const json = await ctx.request.body.json();
       db.insertIntoCollection('histo',{
         action:'Update info Room',
         room: ctx.params.roomId,
         body : json
       })
       roomService.updateInfo(room.id, json.description, json.url);
-    } catch (e) {
+    } catch (_e) {
       db.insertIntoCollection('histo',{
         action:'Update Status Room',
         room: room

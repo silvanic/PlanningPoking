@@ -53,10 +53,11 @@ export class MyService {
         return this.http.put(environment.apiUrl+'/room/'+roomId, body);
     }
 
-    login(roomName: string, username: string, roomId: string|null){
-        let obj : any = {
+    login(roomName: string, username: string, suit: string, roomId: string|null){        
+        const obj : any = {
             roomName: roomName,
-            username: username
+            username: username,
+            suit: suit
         };
         if(roomId){
             obj.roomId = roomId;

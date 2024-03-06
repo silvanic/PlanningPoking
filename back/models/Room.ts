@@ -1,6 +1,5 @@
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/cryptoRandomString.ts";
 import { User, Vote, StatusRoom } from "./type.ts";
-import randomBytes from "https://deno.land/std@0.83.0/node/_crypto/randomBytes.ts";
 
 export class Room {
 

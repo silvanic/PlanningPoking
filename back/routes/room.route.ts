@@ -2,7 +2,6 @@ import { Router } from "https://deno.land/x/oak@v13.2.5/mod.ts";
 import { User } from "../models/type.ts";
 import eventEmitter from "../events/room.events.ts";
 import { RoomService } from "../services/room.service.ts"
-import { db } from "../server.ts";
 
 const router = new Router();
 export const roomService = new RoomService();
@@ -19,13 +18,8 @@ router.post("/login", async (ctx) => {
   const user = roomService.addUser(room.id, {
     id: null,
     vote: "",
-    name: data.username,
-  });
-  db.insertIntoCollection('histo',{
-    action:'login',
-    room: room,
-    user: user
-  })
+    name: data.username
+  });  
   ctx.response.status = 200;
   ctx.response.body = {
     userId: user?.id,
@@ -33,8 +27,14 @@ router.post("/login", async (ctx) => {
   };
 });
 
-router.get("/events/:roomId/:userId", (ctx) => {
-  const target = ctx.sendEvents();
+router.get("/events/:roomId/:userId", async (ctx) => {
+  const target = await ctx.sendEvents();
+  
+  console.log('Connect SSE : ',ctx.params.userId);
+  
+  target.addEventListener("close", () => {
+    eventEmitter.emit("disconnect", ctx.params.roomId, user);
+  });
 
   const user: User = {
     id: ctx.params.userId,
@@ -45,27 +45,15 @@ router.get("/events/:roomId/:userId", (ctx) => {
 
   eventEmitter.emit("connect", ctx.params.roomId, user);
 
-  target.addEventListener("close", () => {
-    eventEmitter.emit("disconnect", ctx.params.roomId, user);
-  });
 });
 
 router.put("/room/:roomId", async (ctx) => {
   const room = roomService.get(ctx.params.roomId);
   if (room) {
     try {
-      const json = await ctx.request.body.json();
-      db.insertIntoCollection('histo',{
-        action:'Update info Room',
-        room: ctx.params.roomId,
-        body : json
-      })
+      const json = await ctx.request.body.json();      
       roomService.updateInfo(room.id, json.description, json.url);
-    } catch (_e) {
-      db.insertIntoCollection('histo',{
-        action:'Update Status Room',
-        room: room
-      })
+    } catch (_e) {      
       roomService.updateStatus(room.id);
     }
     eventEmitter.emit("send", room, "updateRoom");
@@ -76,10 +64,6 @@ router.put("/room/:roomId", async (ctx) => {
 });
 
 router.get("/room/:id", (ctx) => {
-  db.insertIntoCollection('histo',{
-    action:'Get Room',
-    roomId: ctx.params.id
-  })
   const room = roomService.get(ctx.params.id);
   if (room) {
     ctx.response.status = 200;
@@ -97,15 +81,17 @@ router.get("/room/:id", (ctx) => {
   }
 });
 
+router.get('/rooms', (ctx) => {
+  ctx.response.status=200;
+  let result = [];
+  for (const iterator of roomService.rooms.entries()) {
+    result.push(iterator[1].sendJSON());
+  }
+  ctx.response.body = result;
+})
+
 router.put("/room/:roomId/voter", async (ctx) => {
   const data = await ctx.request.body.json();
-  db.insertIntoCollection('histo',{
-    action:'Voter',
-    roomId: ctx.params.roomId,
-    userId: data.userId,
-    vote: data.vote
-  })
-  //console.log('voter', data);
   if (data.userId && data.vote) {
     const room = roomService.get(ctx.params.roomId);
     if (room) {

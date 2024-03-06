@@ -1,4 +1,4 @@
-import { ServerSentEventTarget } from "https://deno.land/x/oak_commons@0.6.1/server_sent_event.ts";
+import { ServerSentEventTarget } from "https://deno.land/x/oak_commons@0.7.0/server_sent_event.ts";
 
 export interface User {
     id: string | null,

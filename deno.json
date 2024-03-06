@@ -1,6 +1,10 @@
 {
-    "tasks": {
-        "back": "cd back && deno run --allow-all --watch server.ts",
-        "front": "cd front && npm install && ng serve"
-    }
+  "tasks": {
+    "back": "cd back && deno run --allow-all --watch server.ts",
+    "front": "cd front && npm install && ng serve",
+    "build-dev": "cd front && ng build --delete-output-path --configuration=development",
+    "full-dev": "deno task build-dev && deno task back",
+    "build-deno": "cd front && ng build --delete-output-path",
+    "full-deno": "deno task build-deno && deno task back"
+  }
 }

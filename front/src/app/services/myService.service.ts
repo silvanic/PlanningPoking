@@ -3,7 +3,7 @@ import { SseService } from "./sse.service";
 import { Observable, catchError, throwError } from "rxjs";
 import { MessageSSE } from "../types";
 import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
-import { environment } from "../../environments/environment.development";
+import { environment } from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root'

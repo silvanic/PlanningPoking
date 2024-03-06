@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, TemplateRef } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { MyService } from '../services/myService.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -114,7 +114,7 @@ export class PlanPokerComponent {
             )
             .subscribe((event) => {
               this.connected = true;
-              (this.data = JSON.parse(event.data.slice(5))), null, 2;
+              (this.data = JSON.parse(event.data)), null, 2;
               this.optionForm.setValue({
                 name: this.data.name,
                 description: this.data.description,
